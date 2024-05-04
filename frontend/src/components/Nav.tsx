@@ -4,6 +4,7 @@ import axios from "axios";
 import { PageConstants } from "../constants";
 import { UserContextType, useUser } from "../context";
 import { Container, Navbar, Nav } from "react-bootstrap";
+import { getSetToken } from "../utilities";
 
 const MyNav = () => {
   // using constants
@@ -11,7 +12,8 @@ const MyNav = () => {
 
   // using context to validate state of nav
   const { userName, setUserName } = useUser() as UserContextType;
-  const user = localStorage.getItem("name");
+  // get token
+  const token = getSetToken("token");
 
   // call to singout api
   const logout = async () => {
@@ -19,6 +21,8 @@ const MyNav = () => {
       await axios.post("http://localhost:8000/auth/signout");
       // if logout then empty the state
       setUserName("");
+      // remove token
+      getSetToken("set", []);
       localStorage.removeItem("name");
     } catch (error) {
       console.error("Error occurred during logout:", error);
@@ -30,7 +34,7 @@ const MyNav = () => {
   // if (props.name === '') {
   menu = (
     <ul className="navbar-nav me-auto mb-2 mb-md-0">
-      {userName || user?.length ? (
+      {userName || token?.length ? (
         <li className="nav-item active">
           <Link to="/login" className="nav-link" onClick={logout}>
             {LogOut}

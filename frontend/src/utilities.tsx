@@ -60,6 +60,6 @@ const getSetLocalStorage = (
   }
 };
 
-export const getSetName = (getSet: string, data?: string[]) => {
-  return getSetLocalStorage("name", getSet, data, []);
+export const getSetToken = (getSet: string, data?: string[]) => {
+  return getSetLocalStorage("token", getSet, data, []);
 };

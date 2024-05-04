@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, FormikHelpers } from "formik";
 import axios, { AxiosResponse } from "axios";
 import { Redirect } from "react-router-dom";
-import { InputField, getSetName } from "../utilities";
+import { InputField, getSetToken } from "../utilities";
 import { SignUpSchema } from "../validation";
 import { Register } from "../constants";
 import { UserContextType, useUser } from "../context";
@@ -33,8 +33,9 @@ const RegisterComponent = () => {
         }
       );
       // update state when succesfull
-      setUserName(response.data);
-      getSetName("set", response.data);
+      setUserName(response.data.user);
+      // set token
+      getSetToken("set", response.data.token);
       setIsRegistered(true); // Set isRegistered to true upon successful registration
     } catch (error) {
       if ((error as any).response) {

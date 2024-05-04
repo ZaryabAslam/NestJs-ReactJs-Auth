@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, FormikHelpers } from "formik";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
-import { InputField, getSetName } from "../utilities";
+import { InputField, getSetToken } from "../utilities";
 import { LoginInSchema } from "../validation";
 import { LogInPage } from "../constants";
 import { UserContextType, useUser } from "../context/index";
@@ -38,7 +38,8 @@ const LoginComponent = () => {
       });
       // updating state when apis succesfull
       setUserName(response.data.user);
-      getSetName("set", response.data.user);
+      // set token
+      getSetToken("set", response.data.token);
       setIsLoggedIn(true); // Set isLoggedIn to true upon successful login
     } catch (error) {
       if ((error as any).response) {

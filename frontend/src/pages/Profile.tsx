@@ -1,10 +1,8 @@
 import { UserContextType, useUser } from "../context/index";
-import { getSetName } from "../utilities";
 
 export const ProfilePage = () => {
   
   const { userName } = useUser() as UserContextType;
-  const user = getSetName("get");
 
   return (
     <>
@@ -13,7 +11,7 @@ export const ProfilePage = () => {
           <div className="row align-items-center flex-row-reverse">
             <div className="col-lg-6">
               <div className="about-text go-to">
-                <h3 className="dark-color">Welcome {userName || user}</h3>
+                <h3 className="dark-color">Welcome {userName}</h3>
                 <h6 className="theme-color lead">
                   Lorem ipsum dolor sit amet, consectetur
                 </h6>

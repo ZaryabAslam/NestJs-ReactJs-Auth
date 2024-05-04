@@ -2,13 +2,16 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
+  Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { CreateUserDto } from './dtos/create-user.dto';
 
 @Controller('auth')
@@ -26,7 +29,7 @@ export class AppController {
    * @returns The name of the registered user
    */
   @Post('signup')
-  async register(@Body() body: CreateUserDto) {
+  async register(@Body() body: CreateUserDto,@Res({ passthrough: true }) response: Response) {
     const { name, email, password } = body;
 
     // Hash the password
@@ -49,10 +52,21 @@ export class AppController {
       password: hashedPassword,
     });
 
+    const userFound = await this.appService.findOne({ email });
+
+    // Sign a JWT token
+    const token = await this.jwtService.signAsync({ id: user._id });
+
+    // Set the JWT token as an HTTP-only cookie
+    response.cookie('jwt', token, { httpOnly: true });
+
     delete user.password;
 
     // Return the name of the registered user
-    return user.name;
+    return {
+      token,
+      user: user.name,
+    };
   }
 
   /**
@@ -86,6 +100,7 @@ export class AppController {
 
     // Return the name of the authenticated user
     return {
+      token,
       user: user.name,
     };
   }
@@ -105,6 +120,27 @@ export class AppController {
       message: 'success',
     };
   }
+
+  @Get('user')
+    async user(@Req() request: Request) {
+        try {
+            const cookie = request.cookies['jwt'];
+
+            const data = await this.jwtService.verifyAsync(cookie);
+
+            if (!data) {
+                throw new UnauthorizedException();
+            }
+
+            const user = await this.appService.findOne({_id: data['id']});
+
+            const {password, ...result} = user;
+
+            return result;
+        } catch (e) {
+            throw new UnauthorizedException();
+        }
+    }
 
   /**
    * Validate email format.
